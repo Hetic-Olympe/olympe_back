@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   app:
@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "5001:5001"
     environment:
       PGHOST: postgres
       PGUSER: postgres
@@ -15,16 +15,16 @@ services:
     depends_on:
       - postgres
     volumes:
-      - .:/usr/src/app
+      - ./src/:/app/src
 
   postgres:
     image: postgres:latest
     ports:
-      - "5432:5432"
+      - "4000:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: db_olympe
 
   pgadmin:
     image: dpage/pgadmin4

@@ -1,20 +1,13 @@
-# Use Node.js version 14 as base image
-FROM node:14
+# Environnement
+FROM node:alpine
 
-# Set working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package.json and package-lock.json to container
-COPY package*.json ./
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+RUN npm i
 
-# Install dependencies
-RUN npm install
+COPY src src
+COPY tsconfig.json tsconfig.json
 
-# Copy all application files to container
-COPY . .
-
-# Expose port 3000 (the port your Express app will listen on)
-EXPOSE 3000
-
-# Command to run your application
-CMD ["node", "app.js"]
+CMD npm start
