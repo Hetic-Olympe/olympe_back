@@ -85,25 +85,21 @@ import usersRoutes from "./controllers/users.controller";
 
 const app = express();
 
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || 5001;
 
-app.get('/test', (req, res) => {
-  res.send('Hello, World!');
+app.get("/test", (req, res) => {
+  res.send("Hello, World!");
 });
 
 // Montez les routes des utilisateurs et des conversations sur votre application
 app.use("/api/users", usersRoutes);
 
-
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
-  res
-    .status(500)
-    .send({ message: "Something went wrong", error: err.message });
+  res.status(500).send({ message: "Something went wrong", error: err.message });
 });
 
 async function bootstrap(): Promise<void> {
@@ -116,7 +112,6 @@ async function bootstrap(): Promise<void> {
     const server = app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });
-
   } catch (error) {
     console.log("DB connexion failed");
     console.log(error);

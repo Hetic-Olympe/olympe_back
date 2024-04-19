@@ -16,19 +16,16 @@ router.get("/test", async (req: Request, res: Response) => {
   }
 });
 
-
-router.get("/createUser", async (req: Request, res: Response) => {
+router.get("/signup", async (req: Request, res: Response) => {
   try {
-    const userData = req.body
-    console.log(userData)
+    const userData = req.body;
     const user = await service.createUser(userData);
     res.status(200).send(user);
-  } catch (error: any) { 
+  } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
-
 
 /* router.get("/:id", async (req: Request, res: Response) => {
   try {
