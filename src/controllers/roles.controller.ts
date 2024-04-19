@@ -11,10 +11,10 @@ router.post("/create", async (req: Request, res: Response) => {
 
     res.status(201).send({ success: "Your role successfully created" });
   } catch (error: any) {
-    console.error(error);
-    switch (error.message) {
-      case "ER_DUP_ENTRY":
-        error.message = "This role is already existed";
+    console.error("ERROR", error.code);
+    switch (error.code) {
+      case "23505":
+        error.message = "This role already existed";
         break;
       default:
         error.message = "An error occurred";
