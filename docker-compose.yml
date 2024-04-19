@@ -9,9 +9,9 @@ services:
       - "5001:5001"
     environment:
       PGHOST: postgres
-      PGUSER: postgres
-      PGDATABASE: mydatabase
-      PGPASSWORD: example
+      PGUSER: user
+      PGDATABASE: db_olympe
+      PGPASSWORD: password
     depends_on:
       - postgres
     volumes:
@@ -22,8 +22,8 @@ services:
     ports:
       - "4000:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: db_olympe
 
   pgadmin:
