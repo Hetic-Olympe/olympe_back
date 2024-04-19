@@ -16,11 +16,16 @@ router.get("/test", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/signup", async (req: Request, res: Response) => {
+router.post("/signup", async (req: Request, res: Response) => {
   try {
     const userData = req.body;
-    const user = await service.createUser(userData);
-    res.status(200).send(user);
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+    userData.password = hashedPassword;
+
+    await service.createUser(userData);
+
+    res.status(201).send({ success: "Votre compte à été créer avec succès" });
   } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
