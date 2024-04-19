@@ -76,12 +76,12 @@
 //   })
 //   .catch((error) => console.error("DB connection failed :", error));
 
-import "reflect-metadata";
-import { AppDataSource } from "./database/data-source";
-import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import * as http from "http";
+import express, { NextFunction, Request, Response } from "express";
+import "reflect-metadata";
+import rolesRoutes from "./controllers/roles.controller";
 import usersRoutes from "./controllers/users.controller";
+import { AppDataSource } from "./database/data-source";
 
 const app = express();
 
@@ -96,6 +96,7 @@ app.get("/test", (req, res) => {
 
 // Montez les routes des utilisateurs et des conversations sur votre application
 app.use("/api/users", usersRoutes);
+app.use("/api/roles", rolesRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
