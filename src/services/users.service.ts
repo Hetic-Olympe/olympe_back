@@ -15,7 +15,10 @@ export const createUser = async (data: User): Promise<User> => {
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
   try {
-    const user = await userRepository.findOneOrFail({ where: { email } });
+    const user = await userRepository.findOneOrFail({
+      where: { email },
+      relations: ["role"],
+    });
     return user;
   } catch (error) {
     return null;

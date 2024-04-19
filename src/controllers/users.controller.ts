@@ -20,11 +20,17 @@ router.get("/test", async (req: Request, res: Response) => {
 router.post("/signup", async (req: Request, res: Response) => {
   try {
     const userData = req.body;
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    const role = await roleService.getRole("user");
+    const role = await roleService.getRoleByLibel("user");
+
+    if (role === null) {
+      throw new Error("This role doesn't exist");
+    }
 
     userData.password = hashedPassword;
+    userData.role = role;
 
     await service.createUser(userData);
 
@@ -61,7 +67,11 @@ router.post("/signin", async (req: Request, res: Response) => {
       throw new Error("Bad credentials");
     }
 
-    const payload = { userId: user.id, email: user.email };
+    const payload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role.libel,
+    };
     const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
