@@ -77,9 +77,29 @@
 //   .catch((error) => console.error("DB connection failed :", error));
 
 import express from "express";
+import "reflect-metadata";
+import { AppDataSource } from "./database/data-source";
 
 const app = express();
+async function bootstrap(): Promise<void> {
+  try {
+    // Connexion à la base de donnée (Attente de la connexion avant de passer à la suite)
+    await AppDataSource.initialize().then(() => {
+      console.log("DB connected");
+    });
+    // Start Express server
+    const server = app.listen(5001, () => {
+      console.log("Server is running!");
+    });
 
-app.listen(5001, () => {
-  console.log("App is running!");
-});
+    console.log(
+      `Server is running, GraphQL Playground available at http://localhost:5001`
+    );
+  } catch (error) {
+    console.log("DB connexion failed");
+    console.log(error);
+  }
+}
+
+// Call the bootstrap function to start the application
+bootstrap();
