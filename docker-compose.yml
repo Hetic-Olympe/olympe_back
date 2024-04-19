@@ -8,30 +8,30 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: example
-      MYSQL_DATABASE: mydatabase
+      PGHOST: postgres
+      PGUSER: postgres
+      PGDATABASE: mydatabase
+      PGPASSWORD: example
     depends_on:
-      - mysql
+      - postgres
     volumes:
       - .:/usr/src/app
 
-  mysql:
-    image: mysql:latest
+  postgres:
+    image: postgres:latest
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: mydatabase
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: mydatabase
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+  pgadmin:
+    image: dpage/pgadmin4
     ports:
-      - "8080:80"
+      - "5050:80"
     environment:
-      PMA_HOST: mysql
-      PMA_USER: root
-      PMA_PASSWORD: example
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
-      - mysql
+      - postgres
