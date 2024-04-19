@@ -25,9 +25,17 @@ router.post("/signup", async (req: Request, res: Response) => {
 
     await service.createUser(userData);
 
-    res.status(201).send({ success: "Votre compte à été créer avec succès" });
+    res.status(201).send({ success: "Your account successfully created" });
   } catch (error: any) {
     console.error(error);
+    switch (error.message) {
+      case "ER_DUP_ENTRY":
+        error.message = "This email is already linked to an account";
+        break;
+      default:
+        error.message = "An error occurred";
+        break;
+    }
     res.status(400).send({ error: error.message });
   }
 });

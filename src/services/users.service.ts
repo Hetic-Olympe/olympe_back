@@ -10,7 +10,6 @@ export const getUsers = async (): Promise<User[]> => {
 
 export const createUser = async (data: User): Promise<User> => {
   const newUser = await userRepository.save(data);
-
   return newUser;
 };
 
