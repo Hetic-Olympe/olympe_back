@@ -1,5 +1,5 @@
-import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import * as service from "../services/users.service";
@@ -29,6 +29,39 @@ router.post("/signup", async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
+  }
+});
+
+router.post("/signin", async (req: Request, res: Response) => {
+  try {
+    const userData = req.body;
+    const user = await service.getUserByEmail(userData.email);
+
+    if (user === null) {
+      throw new Error("Bad credentials");
+    }
+
+    const verifyPassword = await bcrypt.compare(
+      userData.password,
+      user.password
+    );
+
+    if (!verifyPassword) {
+      throw new Error("Bad credentials");
+    }
+
+    const payload = { userId: user.id, email: user.email };
+    const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
+
+    res.status(200).send({
+      success: "User loggin",
+      token,
+    });
+  } catch (error: any) {
+    // Ajouter ': any' pour spécifier le type de 'error'
+    console.error(error);
+    res.status(404).send({ error: error.message });
   }
 });
 
@@ -139,48 +172,6 @@ router.put("/:id", async (req: Request, res: Response) => {
 });
 
 
-router.post("/sign-in", async (req: Request, res: Response) => {
-  try {
-    const data = req.body;
-    const user = await service.getUserByEmail(data.email);
-
-    if (user === undefined) {
-      throw new Error("Mauvais identifiants");
-    }
-
-    const verifyPassword = await bcrypt.compare(data.password, user.password);
-
-    if (!verifyPassword) {
-      throw new Error("Mauvais identifiants");
-    }
-
-    const payload = { userId: user.id, email: user.email };
-    const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
-
-    const affectedRows = await service.updateUser(
-      { ...user, token: token },
-      user.id
-    );
-
-    if (affectedRows === 0) {
-      throw new Error("This user can't be updated");
-    }
-
-    res.status(200).send({
-      success: "User loggin",
-      user: {
-        id: user.id,
-        email: user.email,
-        full_name: user.full_name,
-        password: user.password,
-        token: user.token,
-      },
-    });
-  } catch (error: any) { // Ajouter ': any' pour spécifier le type de 'error'
-    console.error(error);
-    res.status(404).send({ error: error.message });
-  }
-}); */
+*/
 
 export default router;
