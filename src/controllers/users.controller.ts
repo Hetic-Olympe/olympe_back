@@ -6,21 +6,31 @@ import * as service from "../services/users.service";
 
 const router = express.Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/test", async (req: Request, res: Response) => {
   try {
     const users = await service.getUsers();
-    const usersData = users.map((user: any) => {
-      return { id: user.id, full_name: user.full_name, email: user.email };
-    });
-    res.status(200).send(usersData);
-  } catch (error: any) { // Ajouter ': any' pour spécifier le type de 'error'
+    res.status(200).send(users);
+  } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
 
 
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/createUser", async (req: Request, res: Response) => {
+  try {
+    const userData = req.body
+    console.log(userData)
+    const user = await service.createUser(userData);
+    res.status(200).send(user);
+  } catch (error: any) { 
+    console.error(error);
+    res.status(400).send({ error: error.message });
+  }
+});
+
+
+/* router.get("/:id", async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id, 10); // Convertir en nombre
     const user = await service.getUserById(userId);
@@ -169,6 +179,6 @@ router.post("/sign-in", async (req: Request, res: Response) => {
     console.error(error);
     res.status(404).send({ error: error.message });
   }
-});
+}); */
 
 export default router;

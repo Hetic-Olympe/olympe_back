@@ -1,10 +1,25 @@
 import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import bcrypt from "bcryptjs";
-import { User } from "../types/user";
+import { AppDataSource } from "../database/data-source";
+import { User } from "../models/User";
 
-const mysqlPool: Pool = require("../database/config");
+const userRepository = AppDataSource.getRepository(User);
+
 
 export const getUsers = async (): Promise<User[]> => {
+  const users = await userRepository.find();
+  return users;
+};
+
+export const createUser = async (data: User): Promise<User> => {
+
+  const newUser = await userRepository.save(data);
+
+  return newUser
+};
+
+
+/* export const getUsers = async (): Promise<User[]> => {
   const [rows] = await mysqlPool.query<RowDataPacket[]>("SELECT * FROM Users");
   return rows as User[];
 };
@@ -48,3 +63,4 @@ export const updateUser = async (data: User, id: number): Promise<number> => {
   );
   return result.affectedRows;
 };
+ */
