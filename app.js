@@ -5,7 +5,7 @@ const app = express();
 require("express-async-errors");
 const io = require("socket.io")(4080, {
   cors: {
-    origin: process.env.URL_FRONT || "localhost",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
     allowedHeaders: ["Content-Type"],
@@ -18,11 +18,17 @@ const mysqlPool = require("./database/config");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 // Middlewares
 const usersRoutes = require("./controllers/users.controller");
 const conversationsRoutes = require("./controllers/conversations.controller");
+
+// Ajoutez cette ligne pour définir une route "/test"
+app.get("/test", (req, res) => {
+  res.send("Test endpoint is working!");
+});
+
 
 app.use("/api/users", usersRoutes);
 app.use("/api/conversations", conversationsRoutes);
