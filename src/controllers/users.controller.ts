@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 import * as service from "../services/users.service";
 import * as roleService from "../services/roles.service";
+import { RoleEnum } from "../enums/RoleEnum";
 
 const router = express.Router();
 
@@ -23,10 +24,10 @@ router.post("/signup", async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    const role = await roleService.getRoleByLibel("user");
+    const role = await roleService.getRoleByLibel(RoleEnum.USER);
 
     if (role === null) {
-      throw new Error("This role doesn't exist");
+      throw new Error();
     }
 
     userData.password = hashedPassword;
@@ -36,9 +37,8 @@ router.post("/signup", async (req: Request, res: Response) => {
 
     res.status(201).send({ success: "Your account successfully created" });
   } catch (error: any) {
-    console.error(error);
-    switch (error.message) {
-      case "ER_DUP_ENTRY":
+    switch (error.code) {
+      case "23505":
         error.message = "This email is already linked to an account";
         break;
       default:
@@ -75,13 +75,8 @@ router.post("/signin", async (req: Request, res: Response) => {
     const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
-    res.status(200).send({
-      success: "User loggin",
-      token,
-    });
+    res.status(200).send({ token });
   } catch (error: any) {
-    // Ajouter ': any' pour spécifier le type de 'error'
-    console.error(error);
     res.status(404).send({ error: error.message });
   }
 });

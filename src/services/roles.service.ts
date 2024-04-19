@@ -10,10 +10,10 @@ export const getRoles = async (): Promise<Role[]> => {
 
 export const getRoleByLibel = async (libel: string): Promise<Role | null> => {
   try {
-    const roleFinded = await roleRepository.findOneOrFail({
+    const role = await roleRepository.findOneOrFail({
       where: { libel },
     });
-    return roleFinded;
+    return role;
   } catch (error) {
     return null;
   }
