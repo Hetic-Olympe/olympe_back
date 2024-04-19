@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 import * as service from "../services/users.service";
+import * as roleService from "../services/roles.service";
 
 const router = express.Router();
 
@@ -20,6 +21,8 @@ router.post("/signup", async (req: Request, res: Response) => {
   try {
     const userData = req.body;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+    const role = await roleService.getRole("user");
 
     userData.password = hashedPassword;
 

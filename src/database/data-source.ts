@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+import { Role } from "../models/Role";
 import { User } from "../models/User";
 
 export const AppDataSource = new DataSource({
@@ -10,7 +11,7 @@ export const AppDataSource = new DataSource({
   database: "db_olympe",
   synchronize: true,
   logging: true,
-  entities: [User],
+  entities: [User, Role],
   subscribers: [],
   migrations: [],
 });
