@@ -1,25 +1,25 @@
-const express = require("express");
+import express, { Request, Response } from "express";
+import * as service from "../services/conversations.service";
+import * as serviceUser from "../services/users.service";
+
 const router = express.Router();
 
-const service = require("../services/conversations.service");
-const serviceUser = require("../services/users.service");
-
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const conversations = await service.getConversations();
     res.status(200).send(conversations);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
 
-router.get("/:userId", async (req, res) => {
+router.get("/:userId", async (req: Request, res: Response) => {
   try {
-    const user_id = req.params.userId;
+    const user_id: number = parseInt(req.params.userId, 10);
     const conversations = await service.getConversationsByUserId(user_id);
-    const conversationsWithUser = Promise.all(
-      conversations.map(async (conversation) => {
+    const conversationsWithUser = await Promise.all(
+      conversations.map(async (conversation: any) => {
         const contactId =
           conversation.user_id_1 === Number(user_id)
             ? conversation.user_id_2
@@ -42,16 +42,16 @@ router.get("/:userId", async (req, res) => {
       })
     );
 
-    res.status(200).send(await conversationsWithUser);
-  } catch (error) {
+    res.status(200).send(conversationsWithUser);
+  } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
-    const data = req.body;
+    const data: any = req.body;
 
     data.created_at = new Date();
     data.updated_at = new Date();
@@ -63,10 +63,10 @@ router.post("/", async (req, res) => {
     }
 
     res.status(200).send({ success: "Conversation added successfully" });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,48 +1,55 @@
-const express = require("express");
+import express, { Request, Response } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+import * as service from "../services/users.service";
+
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
-const service = require("../services/users.service");
-
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const users = await service.getUsers();
-    const usersData = users.map((user) => {
+    const usersData = users.map((user: any) => {
       return { id: user.id, full_name: user.full_name, email: user.email };
     });
     res.status(200).send(usersData);
-  } catch (error) {
+  } catch (error: any) { // Ajouter ': any' pour spécifier le type de 'error'
     console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
 
-router.get("/:id", async (req, res) => {
+
+router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const user = await service.getUserById(req.params.id);
+    const userId = parseInt(req.params.id, 10); // Convertir en nombre
+    const user = await service.getUserById(userId);
     if (user === undefined) {
       throw new Error("This user can't be found");
     }
     res.status(200).send(user);
-  } catch (error) {
+  } catch (error: any) {
     res.status(404).send({ error: error.message });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+
+
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const affectedRows = await service.deleteUserById(req.params.id);
+    const userId = parseInt(req.params.id, 10); // Convertir en nombre
+    const affectedRows = await service.deleteUserById(userId);
     if (affectedRows === 0) {
       throw new Error("This user can't be deleted");
     }
     res.status(200).send({ success: "Deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
     res.status(404).send({ error: error.message });
   }
 });
 
-router.post("/sign-up", async (req, res) => {
+
+router.post("/sign-up", async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -59,7 +66,7 @@ router.post("/sign-up", async (req, res) => {
     }
 
     res.status(201).send({ success: "Votre compte à été créer avec succès" });
-  } catch (error) {
+  } catch (error: any) { // Ajouter ': any' pour spécifier le type de 'error'
     if (error.message.includes("email_UNIQUE")) {
       error.message = "Cette adress email est déjà liée à un compte";
     }
@@ -72,10 +79,10 @@ router.post("/sign-up", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const id = req.params.id;
+    const id = parseInt(req.params.id, 10); // Convertir en nombre
     const user = await service.getUserById(id);
 
     console.log(data);
@@ -106,7 +113,7 @@ router.put("/:id", async (req, res) => {
     }
 
     res.status(200).send({ success: "User updated successfully" });
-  } catch (error) {
+  } catch (error: any) {
     if (error.message.includes("email_UNIQUE")) {
       error.message = "Cette adress email est déjà liée à un compte";
     }
@@ -119,7 +126,8 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.post("/sign-in", async (req, res) => {
+
+router.post("/sign-in", async (req: Request, res: Response) => {
   try {
     const data = req.body;
     const user = await service.getUserByEmail(data.email);
@@ -157,10 +165,10 @@ router.post("/sign-in", async (req, res) => {
         token: user.token,
       },
     });
-  } catch (error) {
+  } catch (error: any) { // Ajouter ': any' pour spécifier le type de 'error'
     console.error(error);
     res.status(404).send({ error: error.message });
   }
 });
 
-module.exports = router;
+export default router;
