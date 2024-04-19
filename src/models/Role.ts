@@ -11,8 +11,8 @@ export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ enum: RoleEnum, unique: true })
-  role: string;
+  @Column({ type: "enum", enum: RoleEnum })
+  libel: string;
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];
