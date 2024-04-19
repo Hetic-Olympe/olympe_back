@@ -1,10 +1,7 @@
-import { Pool, ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import bcrypt from "bcryptjs";
 import { AppDataSource } from "../database/data-source";
 import { User } from "../models/User";
 
 const userRepository = AppDataSource.getRepository(User);
-
 
 export const getUsers = async (): Promise<User[]> => {
   const users = await userRepository.find();
@@ -12,12 +9,19 @@ export const getUsers = async (): Promise<User[]> => {
 };
 
 export const createUser = async (data: User): Promise<User> => {
-
   const newUser = await userRepository.save(data);
 
-  return newUser
+  return newUser;
 };
 
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    const user = await userRepository.findOneOrFail({ where: { email } });
+    return user;
+  } catch (error) {
+    return null;
+  }
+};
 
 /* export const getUsers = async (): Promise<User[]> => {
   const [rows] = await mysqlPool.query<RowDataPacket[]>("SELECT * FROM Users");
@@ -32,13 +36,7 @@ export const getUserById = async (id: number): Promise<User | undefined> => {
   return rows[0] as User | undefined;
 };
 
-export const getUserByEmail = async (email: string): Promise<User | undefined> => {
-  const [rows] = await mysqlPool.query<RowDataPacket[]>(
-    "SELECT * FROM Users WHERE email = ?",
-    [email]
-  );
-  return rows[0] as User | undefined;
-};
+
 
 export const deleteUserById = async (id: number): Promise<number> => {
   const [result] = await mysqlPool.query<ResultSetHeader>(
