@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-
 import * as service from "../services/roles.service";
 
 const router = express.Router();

@@ -12,13 +12,11 @@ const router = express.Router();
 router.post("/signup", async (req: Request, res: Response) => {
   try {
     const userData = req.body;
-
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-
     const role = await roleService.getRoleByLibel(RoleEnum.USER);
 
     if (role === null) {
-      throw new Error();
+      throw new Error("Role doesn't exist");
     }
 
     userData.password = hashedPassword;
@@ -63,7 +61,8 @@ router.post("/signin", async (req: Request, res: Response) => {
       email: user.email,
       role: user.role.libel,
     };
-    const JWT_SECRET = "THIS_IS_A_JWT_SECRET_KEY";
+
+    const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
     res.status(200).send({ token });
@@ -74,7 +73,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 
 router.get("/me", authMiddleware(), (req: Request, res: Response) => {
   try {
-    res.status(200).send({ success: "Auth successfull", user: req.user });
+    res.status(200).send({ user: req.userConnected });
   } catch (error: any) {
     res.status(404).send({ error: error.message });
   }
