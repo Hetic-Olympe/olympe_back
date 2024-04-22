@@ -1,4 +1,5 @@
 import { AppDataSource } from "../database/data-source";
+import { RoleEnum } from "../enums/RoleEnum";
 import { Role } from "../models/Role";
 
 const roleRepository = AppDataSource.getRepository(Role);
@@ -8,7 +9,7 @@ export const getRoles = async (): Promise<Role[]> => {
   return roles;
 };
 
-export const getRoleByLibel = async (libel: string): Promise<Role | null> => {
+export const getRoleByLibel = async (libel: RoleEnum): Promise<Role | null> => {
   try {
     const role = await roleRepository.findOneOrFail({
       where: { libel },

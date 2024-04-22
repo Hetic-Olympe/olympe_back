@@ -25,6 +25,19 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   }
 };
 
+export const getUserById = async (id: string): Promise<User | null> => {
+  try {
+    const user = await userRepository.findOneOrFail({
+      where: { id },
+      relations: ["role"],
+      select: ["email", "id", "role"],
+    });
+    return user;
+  } catch (error) {
+    return null;
+  }
+};
+
 /* export const getUsers = async (): Promise<User[]> => {
   const [rows] = await mysqlPool.query<RowDataPacket[]>("SELECT * FROM Users");
   return rows as User[];

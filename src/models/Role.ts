@@ -4,11 +4,11 @@ import { RoleEnum } from "../enums/RoleEnum";
 
 @Entity()
 export class Role {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({ type: "enum", enum: RoleEnum, unique: true })
-  libel: string;
+  libel: RoleEnum;
 
   @OneToMany(() => User, (user) => user.role)
   users: User[];

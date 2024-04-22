@@ -5,18 +5,9 @@ import jwt from "jsonwebtoken";
 import * as service from "../services/users.service";
 import * as roleService from "../services/roles.service";
 import { RoleEnum } from "../enums/RoleEnum";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
-
-router.get("/test", async (req: Request, res: Response) => {
-  try {
-    const users = await service.getUsers();
-    res.status(200).send(users);
-  } catch (error: any) {
-    console.error(error);
-    res.status(400).send({ error: error.message });
-  }
-});
 
 router.post("/signup", async (req: Request, res: Response) => {
   try {
@@ -72,10 +63,18 @@ router.post("/signin", async (req: Request, res: Response) => {
       email: user.email,
       role: user.role.libel,
     };
-    const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
+    const JWT_SECRET = "THIS_IS_A_JWT_SECRET_KEY";
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
     res.status(200).send({ token });
+  } catch (error: any) {
+    res.status(404).send({ error: error.message });
+  }
+});
+
+router.get("/me", authMiddleware(), (req: Request, res: Response) => {
+  try {
+    res.status(200).send({ success: "Auth successfull", user: req.user });
   } catch (error: any) {
     res.status(404).send({ error: error.message });
   }
