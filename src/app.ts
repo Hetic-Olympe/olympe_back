@@ -90,10 +90,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || 5001;
 
-app.get("/test", (req, res) => {
-  res.send("Hello, World!");
-});
-
 // Montez les routes des utilisateurs et des conversations sur votre application
 app.use("/api/users", usersRoutes);
 app.use("/api/roles", rolesRoutes);
