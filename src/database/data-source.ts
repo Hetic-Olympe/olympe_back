@@ -4,11 +4,11 @@ import { User } from "../models/User";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "postgres",
+  host: process.env.DB_HOST,
   port: 5432,
-  username: "user",
-  password: "password",
-  database: "db_olympe",
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: true,
   entities: [User, Role],

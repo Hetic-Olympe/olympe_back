@@ -82,6 +82,7 @@ import "reflect-metadata";
 import rolesRoutes from "./controllers/roles.controller";
 import usersRoutes from "./controllers/users.controller";
 import { AppDataSource } from "./database/data-source";
+import seedDatabase from "./database/seedDatabase";
 
 const app = express();
 
@@ -105,12 +106,16 @@ async function bootstrap(): Promise<void> {
     await AppDataSource.initialize().then(() => {
       console.log("DB connected");
     });
+    // Seed database
+    await seedDatabase().then(() => {
+      console.log("Seed terminate");
+    });
     // Start Express server
     const server = app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });
   } catch (error) {
-    console.log("DB connexion failed");
+    console.log("DB connexion or seed failed");
     console.log(error);
   }
 }

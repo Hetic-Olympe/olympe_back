@@ -62,7 +62,14 @@ router.post("/signin", async (req: Request, res: Response) => {
       role: user.role.libel,
     };
 
-    const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
+    const JWT_SECRET = process.env.JWT_SECRET;
+
+    console.log("JWT_SECRET", JWT_SECRET);
+
+    if (JWT_SECRET === undefined || JWT_SECRET === null) {
+      throw new Error("No JWT secret provide");
+    }
+
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
     res.status(200).send({ token });
