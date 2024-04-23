@@ -15,7 +15,12 @@ export const authMiddleware = (roles?: RoleEnum[]) => {
 
     try {
       // Decode token
-      const JWT_SECRET = process.env.JWT_SECRET || "THIS_IS_A_JWT_SECRET_KEY";
+      const JWT_SECRET = process.env.JWT_SECRET;
+
+      if (JWT_SECRET === undefined || JWT_SECRET === null) {
+        throw new Error("No JWT secret provide");
+      }
+
       const decodedToken = jwt.verify(token, JWT_SECRET);
 
       if (typeof decodedToken === "string") {
