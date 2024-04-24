@@ -72,7 +72,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
-    res.status(200).send({ token });
+    res.status(200).send({ token, role: user.role.libel });
   } catch (error: any) {
     res.status(404).send({ error: error.message });
   }
