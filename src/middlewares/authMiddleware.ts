@@ -36,7 +36,7 @@ export const authMiddleware = (roles?: RoleEnum[]) => {
 
       // Verify roles if necessary
       if (roles && roles.length > 0) {
-        if (!roles.includes(user.role.libel)) {
+        if (!roles.includes(user.role.label)) {
           throw new Error("Roles not authorized");
         }
       }

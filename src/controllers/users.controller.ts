@@ -13,7 +13,7 @@ router.post("/signup", async (req: Request, res: Response) => {
   try {
     const userData = req.body;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const role = await roleService.getRoleByLibel(RoleEnum.USER);
+    const role = await roleService.getRoleByLabel(RoleEnum.USER);
 
     if (role === null) {
       throw new Error("Role doesn't exist");
@@ -59,7 +59,7 @@ router.post("/signin", async (req: Request, res: Response) => {
     const payload = {
       userId: user.id,
       email: user.email,
-      role: user.role.libel,
+      role: user.role.label,
     };
 
     const JWT_SECRET = process.env.JWT_SECRET;
@@ -72,7 +72,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
-    res.status(200).send({ token, role: user.role.libel });
+    res.status(200).send({ token, role: user.role.label });
   } catch (error: any) {
     res.status(404).send({ error: error.message });
   }

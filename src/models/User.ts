@@ -1,10 +1,26 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { Role } from "./Role";
+import { Like } from "./Like";
+import { Interest } from "./Interest";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column({ unique: true })
   email: string;
@@ -12,6 +28,24 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ type: "varchar", length: 100, nullable: true })
+  firstname: string;
+
+  @Column({ type: "varchar", length: 100, nullable: true })
+  lastname: string;
+
+  @Column({ type: "varchar", length: 30, nullable: true })
+  phone: string;
+
+  @Column({ default: false })
+  isConnected: boolean;
+
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
+
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
+
+  @OneToMany(() => Interest, (interest) => interest.user)
+  interests: Interest[];
 }

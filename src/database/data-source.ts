@@ -1,6 +1,17 @@
 import { DataSource } from "typeorm";
 import { Role } from "../models/Role";
 import { User } from "../models/User";
+import { Country } from "../models/Country";
+import { EventCategory } from "../models/EventCategory";
+import { Medal } from "../models/Medal";
+import { Athlete } from "../models/Athlete";
+import { AthleteSport } from "../models/AtheleteSport";
+import { Sport } from "../models/Sport";
+import { SportField } from "../models/SportField";
+import { Event } from "../models/Event";
+import { Participation } from "../models/Participation";
+import { Like } from "../models/Like";
+import { Interest } from "../models/Interest";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -11,7 +22,21 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: true,
-  entities: [User, Role],
+  entities: [
+    User,
+    Role,
+    Country,
+    EventCategory,
+    Medal,
+    Athlete,
+    AthleteSport,
+    Sport,
+    SportField,
+    Event,
+    Participation,
+    Like,
+    Interest,
+  ],
   subscribers: [],
   migrations: [],
 });
