@@ -9,10 +9,10 @@ export const getRoles = async (): Promise<Role[]> => {
   return roles;
 };
 
-export const getRoleByLibel = async (libel: RoleEnum): Promise<Role | null> => {
+export const getRoleByLabel = async (label: RoleEnum): Promise<Role | null> => {
   try {
     const role = await roleRepository.findOneOrFail({
-      where: { libel },
+      where: { label },
     });
     return role;
   } catch (error) {
