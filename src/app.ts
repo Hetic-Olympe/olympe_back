@@ -81,6 +81,7 @@ import express, { NextFunction, Request, Response } from "express";
 import "reflect-metadata";
 import rolesRoutes from "./controllers/roles.controller";
 import usersRoutes from "./controllers/users.controller";
+import athletesRoutes from "./controllers/athletes.controller";
 import { AppDataSource } from "./database/data-source";
 
 const app = express();
@@ -93,6 +94,7 @@ const port = process.env.PORT || 5001;
 // Montez les routes des utilisateurs et des conversations sur votre application
 app.use("/api/users", usersRoutes);
 app.use("/api/roles", rolesRoutes);
+app.use("/api/athletes", athletesRoutes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
