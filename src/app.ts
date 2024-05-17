@@ -36,10 +36,11 @@
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import "reflect-metadata";
-import rolesRoutes from "./controllers/roles.controller";
-import usersRoutes from "./controllers/users.controller";
-import athletesRoutes from "./controllers/athletes.controller";
 import { AppDataSource } from "./database/data-source";
+import adminRouter from "./routes/admin.routes";
+import userRouter from "./routes/user.routes";
+import { authMiddleware } from "./middlewares/auth.middleware";
+import { RoleEnum } from "./enums/RoleEnum";
 
 const app = express();
 
@@ -49,9 +50,8 @@ app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || 5001;
 
 // Montez les routes des utilisateurs et des conversations sur votre application
-app.use("/api/users", usersRoutes);
-app.use("/api/roles", rolesRoutes);
-app.use("/api/athletes", athletesRoutes);
+app.use("admin/api", authMiddleware([RoleEnum.ADMIN]), adminRouter);
+app.use("/api", userRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
