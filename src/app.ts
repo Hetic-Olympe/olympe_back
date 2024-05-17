@@ -7,7 +7,6 @@
 //   },
 // });
 
-// // Run socket.io
 // let users = [];
 // io.on("connection", (socket) => {
 //   socket.on("addUser", async (userId) => {
