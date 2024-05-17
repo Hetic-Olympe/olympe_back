@@ -31,7 +31,7 @@ export const getUserById = async (id: string): Promise<User | null> => {
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.role", "role")
       .where("user.id = :id", { id })
-      .select(["user.email", "user.id", "role.libel"])
+      .select(["user.email", "user.id", "role.label"])
       .getOneOrFail();
     return user;
   } catch (error) {
