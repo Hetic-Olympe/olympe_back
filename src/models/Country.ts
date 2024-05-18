@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Athlete } from "./Athlete";
+import { Continent } from "./Continent";
 
 @Entity()
 export class Country {
@@ -16,7 +23,10 @@ export class Country {
   nicename: string;
 
   @Column({ type: "boolean", default: true })
-  isParticpate: boolean;
+  isParticipate: boolean;
+
+  @ManyToOne(() => Continent, (continent) => continent.countries)
+  continent: Continent;
 
   @OneToMany(() => Athlete, (athele) => athele.country)
   atheles: Athlete[];
