@@ -12,6 +12,7 @@ import { Event } from "../models/Event";
 import { Participation } from "../models/Participation";
 import { Like } from "../models/Like";
 import { Interest } from "../models/Interest";
+import { Continent } from "../models/Continent";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -25,6 +26,7 @@ export const AppDataSource = new DataSource({
   entities: [
     User,
     Role,
+    Continent,
     Country,
     EventCategory,
     Medal,
