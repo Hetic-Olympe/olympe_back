@@ -1,11 +1,10 @@
 import bcrypt from "bcryptjs";
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-import * as service from "../services/users.service";
-import * as roleService from "../services/roles.service";
-import { RoleEnum } from "../enums/RoleEnum";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import * as roleService from "../../services/roles.service";
+import * as service from "../../services/users.service";
+import { RoleEnum } from "../../enums/RoleEnum";
+import { authMiddleware } from "../../middlewares/auth.middleware";
 
 const router = express.Router();
 
