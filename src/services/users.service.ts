@@ -19,7 +19,7 @@ const getUserWithRelations = async (conditions: any, relations: string[]): Promi
     relations: relations,
     select: FIELDS_TO_SELECT,
   });
-  return user;
+  return user ?? null;
 };
 
 export const createUser = async (data: User): Promise<User> => {
@@ -46,7 +46,15 @@ export const updateUser = async (id: string, fieldsToUpdate: Partial<User>): Pro
 
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
-  return await getUserWithRelations({ email }, ["role"]);
+  try {
+    const user = await userRepository.findOneOrFail({
+      where: { email },
+      relations: ["role"],
+    });
+    return user;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getUserById = async (id: string): Promise<User | null> => {
