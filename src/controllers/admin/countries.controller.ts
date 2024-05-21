@@ -1,13 +1,25 @@
 import express, { Request, Response } from "express";
 import * as service from "../../services/countries.service";
+import { ILike } from "typeorm";
 
 const router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const countries = await service.getCountries();
+    const where: any = {};
+    const filters = req.query;
+
+    if (filters.name) {
+      where.name = ILike(`%${filters.name}%`);
+    }
+    if (filters.continentId) {
+      where.continent = { id: filters.continentId };
+    }
+
+    const countries = await service.getCountries(where);
     res.status(200).send(countries);
   } catch (error) {
+    console.log(error);
     res.status(500).send({ error: "An error occurred" });
   }
 });

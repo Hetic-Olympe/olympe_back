@@ -1,10 +1,12 @@
 import { AppDataSource } from "../database/data-source";
+import { Continent } from "../models/Continent";
 import { Country } from "../models/Country";
 
 const countryRepository = AppDataSource.getRepository(Country);
 
-export const getCountries = async (): Promise<Country[]> => {
+export const getCountries = async (where: any): Promise<Country[]> => {
   const countries = await countryRepository.find({
+    where,
     relations: ["continent"],
     select: {
       id: true,
