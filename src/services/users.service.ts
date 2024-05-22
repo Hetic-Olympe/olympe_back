@@ -1,6 +1,8 @@
 import { AppDataSource } from "../database/data-source";
 import { User } from "../models/User";
+import { Role } from "../models/Role";
 
+const roleRepository = AppDataSource.getRepository(Role);
 const userRepository = AppDataSource.getRepository(User);
 
 const FIELDS_TO_SELECT: (keyof User)[] = [
@@ -40,8 +42,22 @@ export const getUserDetail = async (id: string): Promise<User | null> => {
 };
 
 export const updateUser = async (id: string, fieldsToUpdate: Partial<User>): Promise<User | null> => {
-  await userRepository.update(id, fieldsToUpdate);
-  return await getUserWithRelations({ id }, []);
+  const userToUpdate = await userRepository.findOne({ where: { id: id } });
+  if (!userToUpdate) {
+    return null;
+  }
+
+  Object.assign(userToUpdate, fieldsToUpdate);
+
+  if (fieldsToUpdate.role && typeof fieldsToUpdate.role === 'object' && fieldsToUpdate.role.id) {
+    const role = await roleRepository.findOne({ where: { id: fieldsToUpdate.role.id } });
+    if (role) {
+      userToUpdate.role = role;
+    }
+  }
+
+  await userRepository.save(userToUpdate);
+  return await getUserWithRelations({ id }, ["role", "interests", "likes"]);
 };
 
 
