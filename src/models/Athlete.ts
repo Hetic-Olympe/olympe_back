@@ -48,7 +48,7 @@ export class Athlete {
   @ManyToOne(() => Country, (country) => country.atheles)
   country: Country;
 
-  @OneToMany(() => AthleteSport, (athleteSport) => athleteSport.athlete)
+  @OneToMany(() => AthleteSport, (athleteSport) => athleteSport.athlete, {})
   athleteSports: AthleteSport[];
 
   @OneToMany(() => Participation, (participation) => participation.athlete)

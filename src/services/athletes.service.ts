@@ -5,18 +5,21 @@ const athleteRepository = AppDataSource.getRepository(Athlete);
 
 export const getAthletes = async (): Promise<Athlete[]> => {
   const athletes = await athleteRepository.find({
-    relations: ["country", "athleteSports"],
-    select: {
-      id: true,
-      firstname: true,
-      lastname: true,
-      country: {
-        iso: true,
-        nicename: true,
-      },
-      createdAt: true,
-      athleteSports: true,
-    },
+    relations: [
+      "country",
+      "athleteSports",
+      "athleteSports.sport",
+      "athleteSports.sport.sportField",
+    ],
   });
+
   return athletes;
+};
+
+export const getOneAthleteById = async (id: string): Promise<Athlete> => {
+  const athlete = await athleteRepository.findOneOrFail({
+    where: { id },
+    relations: ["country", "athleteSports"],
+  });
+  return athlete;
 };
