@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import * as service from "../../services/countries.service";
 import { ILike } from "typeorm";
+import { extractPaginationFromFilters } from "../../utils/extractPaginationFromFilters";
 
 const router = express.Router();
 
@@ -8,6 +9,7 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const where: any = {};
     const filters = req.query;
+    const { page, limit, skip } = extractPaginationFromFilters(req);
 
     if (filters.name) {
       where.name = ILike(`%${filters.name}%`);
@@ -16,15 +18,17 @@ router.get("/", async (req: Request, res: Response) => {
       where.continent = { id: filters.continentId };
     }
 
-    const countries = await service.getCountries(where);
-    res.status(200).send(countries);
+    const { countries, total } = await service.getCountries(where, skip, limit);
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).send({ countries, total, page, totalPages });
   } catch (error) {
     console.log(error);
     res.status(500).send({ error: "An error occurred" });
   }
 });
 
-router.post("/update", async (req: Request, res: Response) => {
+router.post("/update/participation", async (req: Request, res: Response) => {
   try {
     const countryId = req.body.id;
     const country = await service.getCountryById(countryId);
