@@ -4,8 +4,17 @@ import { Country } from "../models/Country";
 
 const countryRepository = AppDataSource.getRepository(Country);
 
-export const getCountries = async (where: any): Promise<Country[]> => {
-  const countries = await countryRepository.find({
+export interface PaginateCountries {
+  countries: Country[];
+  total: number;
+}
+
+export const getCountries = async (
+  where: any,
+  skip: number,
+  take: number
+): Promise<PaginateCountries> => {
+  const [countries, total] = await countryRepository.findAndCount({
     where,
     relations: ["continent"],
     select: {
@@ -17,11 +26,13 @@ export const getCountries = async (where: any): Promise<Country[]> => {
         name: true,
       },
     },
+    skip,
+    take,
     order: {
       iso: "ASC",
     },
   });
-  return countries;
+  return { countries, total };
 };
 
 export const updateCountry = async (country: Country): Promise<Country> => {

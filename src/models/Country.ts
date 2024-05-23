@@ -25,9 +25,6 @@ export class Country {
   @Column({ type: "boolean", default: true })
   isParticipate: boolean;
 
-  @ManyToOne(() => Continent, (continent) => continent.countries)
-  continent: Continent;
-
   @OneToMany(() => Athlete, (athele) => athele.country)
   atheles: Athlete[];
 }
