@@ -27,4 +27,7 @@ export class Country {
 
   @OneToMany(() => Athlete, (athele) => athele.country)
   atheles: Athlete[];
+
+  @ManyToOne(() => Continent, (continent) => continent.countries)
+  continent: Continent;
 }
