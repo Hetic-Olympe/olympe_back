@@ -15,8 +15,9 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.get("/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
+    const isAdmin = true;
     try {
-        const users = await service.getUserDetail(id);
+        const users = await service.getUserDetail(id, isAdmin);
         res.status(200).send(users);
     } catch (error) {
         res.status(500).send({ error: "An error occurred" });

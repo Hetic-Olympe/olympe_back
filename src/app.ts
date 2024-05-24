@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: false }));
 const port = process.env.PORT || 5001;
 
 // Montez les routes des utilisateurs et des conversations sur votre application
-app.use("/admin/api", authMiddleware([RoleEnum.ADMIN]), adminRouter);
+app.use("/admin/api", authMiddleware({ roles: [RoleEnum.ADMIN] }), adminRouter);
 app.use("/api", userRouter);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

@@ -4,7 +4,7 @@ import { RoleEnum } from "../enums/RoleEnum";
 import * as service from "../services/users.service";
 
 /* If no roles is passed to the authMiddleware all roles are accepted for authorization */
-export const authMiddleware = (roles?: RoleEnum[]) => {
+export const authMiddleware = ({ selfOnly = false, roles }: { selfOnly?: boolean, roles?: RoleEnum[] } = {}) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     // Format token because we receive "Bearer token"
     const token = req.headers.authorization?.split(" ")[1];
@@ -38,6 +38,14 @@ export const authMiddleware = (roles?: RoleEnum[]) => {
       if (roles && roles.length > 0) {
         if (!roles.includes(user.role.label)) {
           throw new Error("Roles not authorized");
+        }
+      }
+
+      // Restrict access to self if selfOnly is true
+      if (selfOnly) {
+        const id = req.params.id;
+        if (user.id !== id && user.role.label !== RoleEnum.ADMIN) {
+          return res.status(403).json({ error: "Forbidden" });
         }
       }
 

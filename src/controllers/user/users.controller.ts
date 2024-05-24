@@ -5,6 +5,7 @@ import * as roleService from "../../services/roles.service";
 import * as service from "../../services/users.service";
 import { RoleEnum } from "../../enums/RoleEnum";
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import { excludeNonUpdatableFields } from "../../utils/excludeNonUpdatableFields";
 
 const router = express.Router();
 
@@ -77,11 +78,30 @@ router.post("/signin", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/me", authMiddleware(), (req: Request, res: Response) => {
+router.get("/me", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN] }), async (req: Request, res: Response) => {
   try {
-    res.status(200).send({ user: req.userConnected });
-  } catch (error: any) {
-    res.status(404).send({ error: error.message });
+    const id = req.userConnected?.id;
+    if(!id){
+      return res.status(401).send({ error: "Not authorized" });
+    }
+    const user = await service.getUserDetail(id);
+    if(!user){
+      res.status(404).send({ error: "User not found" });
+    }
+    res.status(200).send(user);
+  } catch (error: any) { 
+    res.status(500).send({ error: error.message });
+  }
+});
+
+router.patch("/:id", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN], selfOnly: true }), async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const fieldsToUpdate = excludeNonUpdatableFields(req.body, ['id', 'password', 'createdAt', 'isConnected', 'role']);
+  try {
+      const updatedUser = await service.updateUser(id, fieldsToUpdate);
+      res.status(200).send(updatedUser);
+  } catch (error) {
+      res.status(500).send({ error: "An error occurred while updating the user." });
   }
 });
 
