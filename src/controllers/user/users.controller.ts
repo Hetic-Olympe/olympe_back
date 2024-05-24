@@ -72,7 +72,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 846000 });
 
-    res.status(200).send({ token, role: user.role.label });
+    res.status(200).send({ token, role: user.role.label, id: user.id, username: user.firstname });
   } catch (error: any) {
     res.status(404).send({ error: error.message });
   }
@@ -81,27 +81,30 @@ router.post("/signin", async (req: Request, res: Response) => {
 router.get("/me", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN] }), async (req: Request, res: Response) => {
   try {
     const id = req.userConnected?.id;
-    if(!id){
+    if (!id) {
       return res.status(401).send({ error: "Not authorized" });
     }
     const user = await service.getUserDetail(id);
-    if(!user){
+    if (!user) {
       res.status(404).send({ error: "User not found" });
     }
     res.status(200).send(user);
-  } catch (error: any) { 
+  } catch (error: any) {
     res.status(500).send({ error: error.message });
   }
 });
 
-router.patch("/:id", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN], selfOnly: true }), async (req: Request, res: Response) => {
-  const id = req.params.id;
+router.patch("/me", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN] }), async (req: Request, res: Response) => {
+  const id = req.userConnected?.id;
+  if (!id) {
+    return res.status(401).send({ error: "Not authorized" });
+  }
   const fieldsToUpdate = excludeNonUpdatableFields(req.body, ['id', 'password', 'createdAt', 'isConnected', 'role']);
   try {
-      const updatedUser = await service.updateUser(id, fieldsToUpdate);
-      res.status(200).send(updatedUser);
+    const updatedUser = await service.updateUser(id, fieldsToUpdate);
+    res.status(200).send(updatedUser);
   } catch (error) {
-      res.status(500).send({ error: "An error occurred while updating the user." });
+    res.status(500).send({ error: "An error occurred while updating the user." });
   }
 });
 
