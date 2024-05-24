@@ -15,6 +15,14 @@ const FIELDS_TO_SELECT: (keyof User)[] = [
   "createdAt"
 ];
 
+const buildRelations = (isAdminRoute: boolean) => {
+  const relations = ["interests", "likes"];
+  if (isAdminRoute) {
+    relations.push("role");
+  }
+  return relations;
+}
+
 const getUserWithRelations = async (conditions: any, relations: string[]): Promise<User | null> => {
   const user = await userRepository.findOne({
     where: conditions,
@@ -25,23 +33,21 @@ const getUserWithRelations = async (conditions: any, relations: string[]): Promi
 };
 
 export const createUser = async (data: User): Promise<User> => {
-  const newUser = await userRepository.save(data);
-  return newUser;
+  return userRepository.save(data);
 };
 
 export const getUsers = async (): Promise<User[]> => {
-  const users = await userRepository.find({
+  return userRepository.find({
     relations: ["role", "interests", "likes"],
     select: FIELDS_TO_SELECT,
   });
-  return users;
 };
 
-export const getUserDetail = async (id: string): Promise<User | null> => {
-  return await getUserWithRelations({ id }, ["role", "interests", "likes"]);
+export const getUserDetail = async (id: string, isAdminRoute: boolean = false): Promise<User | null> => {
+  return getUserWithRelations({ id }, buildRelations(isAdminRoute));
 };
 
-export const updateUser = async (id: string, fieldsToUpdate: Partial<User>): Promise<User | null> => {
+export const updateUser = async (id: string, fieldsToUpdate: Partial<User>, isAdminRoute: boolean = false): Promise<User | null> => {
   const userToUpdate = await userRepository.findOne({ where: { id: id } });
   if (!userToUpdate) {
     return null;
@@ -57,17 +63,16 @@ export const updateUser = async (id: string, fieldsToUpdate: Partial<User>): Pro
   }
 
   await userRepository.save(userToUpdate);
-  return await getUserWithRelations({ id }, ["role", "interests", "likes"]);
-};
 
+  return getUserWithRelations({ id }, buildRelations(isAdminRoute));
+};
 
 export const getUserByEmail = async (email: string): Promise<User | null> => {
   try {
-    const user = await userRepository.findOneOrFail({
+    return await userRepository.findOneOrFail({
       where: { email },
       relations: ["role"],
     });
-    return user;
   } catch (error) {
     return null;
   }
@@ -75,13 +80,12 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
 
 export const getUserById = async (id: string): Promise<User | null> => {
   try {
-    const user = await userRepository
+    return await userRepository
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.role", "role")
       .where("user.id = :id", { id })
       .select(["user.email", "user.id", "role.label"])
       .getOneOrFail();
-    return user;
   } catch (error) {
     return null;
   }
