@@ -1,9 +1,12 @@
 import { AppDataSource } from "../database/data-source";
 import { User } from "../models/User";
 import { Role } from "../models/Role";
-
+import { Interest } from "../models/Interest";
+import { SportField } from "../models/SportField";
 const roleRepository = AppDataSource.getRepository(Role);
 const userRepository = AppDataSource.getRepository(User);
+const interestRepository = AppDataSource.getRepository(Interest);
+const sportFieldRepository = AppDataSource.getRepository(SportField);
 
 const FIELDS_TO_SELECT: (keyof User)[] = [
   "id",
@@ -16,7 +19,7 @@ const FIELDS_TO_SELECT: (keyof User)[] = [
 ];
 
 const buildRelations = (isAdminRoute: boolean) => {
-  const relations = ["interests", "likes"];
+  const relations = ["interests.sportField", "likes"];
   if (isAdminRoute) {
     relations.push("role");
   }
@@ -89,4 +92,29 @@ export const getUserById = async (id: string): Promise<User | null> => {
   } catch (error) {
     return null;
   }
+};
+
+
+export const updateUserInterests = async (userId: string, sportFieldIds: number[]): Promise<Interest[]> => {
+  // Get the user's current interests
+  const currentInterests = await interestRepository.find({ where: { user: { id: userId } }, relations: ["sportField"] });
+
+  // Remove all existing interests
+  await interestRepository.remove(currentInterests);
+
+  // Find the new sport fields
+  const sportFields = await sportFieldRepository.find({
+    where: sportFieldIds.map(id => ({ id }))
+  });
+
+  // Create and save the new interests
+  const newInterests = sportFields.map(sportField => {
+    const interest = new Interest();
+    interest.sportField = sportField;
+    interest.user = { id: userId } as User;
+    return interest;
+  });
+  const savedInterests = await interestRepository.save(newInterests);
+
+  return savedInterests;
 };
