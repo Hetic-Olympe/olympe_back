@@ -108,6 +108,21 @@ router.patch("/me", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN] }), 
   }
 });
 
+router.patch("/me/interests", authMiddleware({ roles: [RoleEnum.USER, RoleEnum.ADMIN] }), async (req: Request, res: Response) => {
+  const userId = req.userConnected?.id;
+  if (!userId) {
+    return res.status(401).send({ error: "Not authorized" });
+  }
+  try {
+    const { interests } = req.body;
+    const updatedUserInterests = await service.updateUserInterests(userId, interests);
+    res.status(200).send(updatedUserInterests);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "An error occurred" });
+  }
+});
+
 /* router.get("/:id", async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id, 10); // Convertir en nombre
