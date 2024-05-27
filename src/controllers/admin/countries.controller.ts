@@ -17,6 +17,9 @@ router.get("/", async (req: Request, res: Response) => {
     if (filters.continentId) {
       where.continent = { id: filters.continentId };
     }
+    if (filters.isParticipate === "true" || filters.isParticipate === "false") {
+      where.isParticipate = filters.isParticipate.toUpperCase();
+    }
 
     const { countries, total } = await service.getCountries(where, skip, limit);
     const totalPages = Math.ceil(total / limit);
