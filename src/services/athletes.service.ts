@@ -23,3 +23,12 @@ export const getOneAthleteById = async (id: string): Promise<Athlete> => {
   });
   return athlete;
 };
+
+export const updateAthlete = async (id: string, data: Partial<Athlete>): Promise<Athlete> => {
+  await athleteRepository.update(id, data);
+  const athlete = await athleteRepository.findOneOrFail({
+    where: { id },
+    relations: ["country", "athleteSports"],
+  });
+  return athlete;
+}
