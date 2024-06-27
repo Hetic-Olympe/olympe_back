@@ -12,7 +12,8 @@ export interface PaginateCountries {
 export const getCountries = async (
   where: any,
   skip: number,
-  take: number
+  take: number,
+  order: any
 ): Promise<PaginateCountries> => {
   const [countries, total] = await countryRepository.findAndCount({
     where,
@@ -28,9 +29,7 @@ export const getCountries = async (
     },
     skip,
     take,
-    order: {
-      iso: "ASC",
-    },
+    order: { ...order },
   });
   return { countries, total };
 };
