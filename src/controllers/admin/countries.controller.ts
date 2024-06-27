@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import * as service from "../../services/countries.service";
 import { ILike } from "typeorm";
 import { extractPaginationFromFilters } from "../../utils/extractPaginationFromFilters";
+import { extractSortsFromFilters } from "../../utils/extractSortsFromFilters";
 
 const router = express.Router();
 
@@ -11,6 +12,7 @@ router.get("/", async (req: Request, res: Response) => {
     const filters = req.query;
     const { page, limit, skip } = extractPaginationFromFilters(req);
 
+    // Filter
     if (filters.name) {
       where.name = ILike(`%${filters.name}%`);
     }
@@ -21,7 +23,22 @@ router.get("/", async (req: Request, res: Response) => {
       where.isParticipate = filters.isParticipate.toUpperCase();
     }
 
-    const { countries, total } = await service.getCountries(where, skip, limit);
+    const sortableKey = [
+      { paramsKey: "iso", accessKey: "iso" },
+      { paramsKey: "name", accessKey: "nicename" },
+      { paramsKey: "continent", accessKey: "continent.name" },
+      { paramsKey: "isParticipate", accessKey: "isParticipate" },
+    ];
+
+    const { order } = extractSortsFromFilters(req, sortableKey);
+
+    const { countries, total } = await service.getCountries(
+      where,
+      skip,
+      limit,
+      order
+    );
+
     const totalPages = Math.ceil(total / limit);
 
     res.status(200).send({ countries, total, page, totalPages });
