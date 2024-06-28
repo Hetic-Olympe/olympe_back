@@ -8,6 +8,12 @@ import { extractPaginationFromFilters } from "../../utils/extractPaginationFromF
 const router = express.Router();
 const isAdmin = true;
 
+export interface UsersKpis {
+  totalUsers: number;
+  totalUsersActive: number;
+  totalNewUsers: number;
+}
+
 router.get("/", async (req: Request, res: Response) => {
   try {
     const where: any = {};
@@ -33,11 +39,34 @@ router.get("/", async (req: Request, res: Response) => {
 
     const { order } = extractSortsFromFilters(req, sortableKey);
 
-    const { users, total } = await service.getUsers(where, skip, limit, order);
+    const { users, total } = await service.getPaginateUsers(
+      where,
+      skip,
+      limit,
+      order
+    );
 
     const totalPages = Math.ceil(total / limit);
 
     res.status(200).send({ users, total, page, totalPages });
+  } catch (error) {
+    res.status(500).send({ error: "An error occurred" });
+  }
+});
+
+router.get("/kpis", async (req: Request, res: Response) => {
+  try {
+    const users = await service.getUsers();
+
+    const usersKpis: UsersKpis = {
+      totalUsers: users.length,
+      totalUsersActive: users.filter((user) => user.isConnected).length,
+      totalNewUsers: users.filter(
+        (user) => user.createdAt.getDate() === new Date().getDate()
+      ).length,
+    };
+
+    res.status(200).send(usersKpis);
   } catch (error) {
     res.status(500).send({ error: "An error occurred" });
   }

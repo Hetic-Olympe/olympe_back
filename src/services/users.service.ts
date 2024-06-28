@@ -48,7 +48,14 @@ export const createUser = async (data: User): Promise<User> => {
   return userRepository.save(data);
 };
 
-export const getUsers = async (
+export const getUsers = async (): Promise<User[]> => {
+  const users = await userRepository.find({
+    select: FIELDS_TO_SELECT,
+  });
+  return users;
+};
+
+export const getPaginateUsers = async (
   where: any,
   skip: number,
   take: number,
