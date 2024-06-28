@@ -36,12 +36,6 @@ export class User {
   @Column({ type: "varchar", length: 100, nullable: true })
   lastname: string;
 
-  @VirtualColumn({
-    query: () =>
-      `SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user`,
-  })
-  fullname: string;
-
   @Column({ type: "varchar", length: 30, nullable: true })
   phone: string;
 
@@ -56,4 +50,12 @@ export class User {
 
   @OneToMany(() => Interest, (interest) => interest.user)
   interests: Interest[];
+
+  // Virtual column
+
+  @VirtualColumn({
+    query: () =>
+      `SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user`,
+  })
+  fullname: string;
 }
