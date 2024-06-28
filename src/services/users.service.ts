@@ -8,14 +8,20 @@ const userRepository = AppDataSource.getRepository(User);
 const interestRepository = AppDataSource.getRepository(Interest);
 const sportFieldRepository = AppDataSource.getRepository(SportField);
 
+export interface PaginateUsers {
+  users: User[];
+  total: number;
+}
+
 const FIELDS_TO_SELECT: (keyof User)[] = [
   "id",
   "email",
   "firstname",
   "lastname",
+  "fullname",
   "phone",
   "isConnected",
-  "createdAt"
+  "createdAt",
 ];
 
 const buildRelations = (isAdminRoute: boolean) => {
@@ -24,9 +30,12 @@ const buildRelations = (isAdminRoute: boolean) => {
     relations.push("role");
   }
   return relations;
-}
+};
 
-const getUserWithRelations = async (conditions: any, relations: string[]): Promise<User | null> => {
+const getUserWithRelations = async (
+  conditions: any,
+  relations: string[]
+): Promise<User | null> => {
   const user = await userRepository.findOne({
     where: conditions,
     relations: relations,
@@ -39,18 +48,36 @@ export const createUser = async (data: User): Promise<User> => {
   return userRepository.save(data);
 };
 
-export const getUsers = async (): Promise<User[]> => {
-  return userRepository.find({
+export const getUsers = async (
+  where: any,
+  skip: number,
+  take: number,
+  order: any
+): Promise<PaginateUsers> => {
+  const [users, total] = await userRepository.findAndCount({
+    where,
     relations: ["role", "interests", "likes"],
     select: FIELDS_TO_SELECT,
+    skip,
+    take,
+    order: { ...order },
   });
+
+  return { users, total };
 };
 
-export const getUserDetail = async (id: string, isAdminRoute: boolean = false): Promise<User | null> => {
+export const getUserDetail = async (
+  id: string,
+  isAdminRoute: boolean = false
+): Promise<User | null> => {
   return getUserWithRelations({ id }, buildRelations(isAdminRoute));
 };
 
-export const updateUser = async (id: string, fieldsToUpdate: Partial<User>, isAdminRoute: boolean = false): Promise<User | null> => {
+export const updateUser = async (
+  id: string,
+  fieldsToUpdate: Partial<User>,
+  isAdminRoute: boolean = false
+): Promise<User | null> => {
   const userToUpdate = await userRepository.findOne({ where: { id: id } });
   if (!userToUpdate) {
     return null;
@@ -58,8 +85,14 @@ export const updateUser = async (id: string, fieldsToUpdate: Partial<User>, isAd
 
   Object.assign(userToUpdate, fieldsToUpdate);
 
-  if (fieldsToUpdate.role && typeof fieldsToUpdate.role === 'object' && fieldsToUpdate.role.id) {
-    const role = await roleRepository.findOne({ where: { id: fieldsToUpdate.role.id } });
+  if (
+    fieldsToUpdate.role &&
+    typeof fieldsToUpdate.role === "object" &&
+    fieldsToUpdate.role.id
+  ) {
+    const role = await roleRepository.findOne({
+      where: { id: fieldsToUpdate.role.id },
+    });
     if (role) {
       userToUpdate.role = role;
     }
@@ -94,21 +127,26 @@ export const getUserById = async (id: string): Promise<User | null> => {
   }
 };
 
-
-export const updateUserInterests = async (userId: string, sportFieldIds: number[]): Promise<Interest[]> => {
+export const updateUserInterests = async (
+  userId: string,
+  sportFieldIds: number[]
+): Promise<Interest[]> => {
   // Get the user's current interests
-  const currentInterests = await interestRepository.find({ where: { user: { id: userId } }, relations: ["sportField"] });
+  const currentInterests = await interestRepository.find({
+    where: { user: { id: userId } },
+    relations: ["sportField"],
+  });
 
   // Remove all existing interests
   await interestRepository.remove(currentInterests);
 
   // Find the new sport fields
   const sportFields = await sportFieldRepository.find({
-    where: sportFieldIds.map(id => ({ id }))
+    where: sportFieldIds.map((id) => ({ id })),
   });
 
   // Create and save the new interests
-  const newInterests = sportFields.map(sportField => {
+  const newInterests = sportFields.map((sportField) => {
     const interest = new Interest();
     interest.sportField = sportField;
     interest.user = { id: userId } as User;

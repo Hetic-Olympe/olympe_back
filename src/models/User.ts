@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   CreateDateColumn,
   Entity,
@@ -6,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  VirtualColumn,
 } from "typeorm";
 import { Role } from "./Role";
 import { Like } from "./Like";
@@ -33,6 +35,12 @@ export class User {
 
   @Column({ type: "varchar", length: 100, nullable: true })
   lastname: string;
+
+  @VirtualColumn({
+    query: () =>
+      `SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user`,
+  })
+  fullname: string;
 
   @Column({ type: "varchar", length: 30, nullable: true })
   phone: string;
