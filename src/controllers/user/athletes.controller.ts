@@ -5,13 +5,11 @@ const router = express.Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const athletesTmp = await service.getAthletes();
-    const athletes = athletesTmp.map((athlete) => {
+    const { athletes } = await service.getAthletes({}, 0, 0, {});
+    const formattedAthletes = athletes.map((athlete) => {
       const athleteSportTab = athlete.athleteSports;
       const sportField =
-        athleteSportTab.length > 0
-          ? athlete.athleteSports[0].sport.sportField.label
-          : "";
+        athleteSportTab.length > 0 ? athlete.athleteSports[0].sport.label : "";
 
       return {
         id: athlete.id,
@@ -20,11 +18,11 @@ router.get("/", async (req: Request, res: Response) => {
         age: athlete.age,
         gender: athlete.gender,
         pictureProfile: athlete.pictureProfile,
-        country: athlete.country,
+        country: athlete.country.name,
         sportField: sportField,
       };
     });
-    res.status(200).send(athletes);
+    res.status(200).send(formattedAthletes);
   } catch (error) {
     res.status(500).send({ error: "An error occurred" });
   }
