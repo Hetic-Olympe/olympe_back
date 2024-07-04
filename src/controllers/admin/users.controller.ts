@@ -14,6 +14,8 @@ export interface UsersKpis {
   totalNewUsers: number;
 }
 
+export type UsersId = string[];
+
 router.get("/", async (req: Request, res: Response) => {
   try {
     const where: any = {};
@@ -34,6 +36,7 @@ router.get("/", async (req: Request, res: Response) => {
     const sortableKey = [
       { paramsKey: "fullname", accessKey: "fullname" },
       { paramsKey: "isConnected", accessKey: "isConnected" },
+      { paramsKey: "isArchived", accessKey: "isArchived" },
       { paramsKey: "role", accessKey: "role.label" },
     ];
 
@@ -77,6 +80,18 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const users = await service.getUserDetail(id, isAdmin);
     res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send({ error: "An error occurred" });
+  }
+});
+
+router.patch("/archive", async (req: Request, res: Response) => {
+  const ids: UsersId = req.body.usersId;
+  try {
+    for (const id of ids) {
+      await service.updateUser(id, { isArchived: true }, isAdmin);
+    }
+    res.status(200).send({ success: "Users successfuly archived" });
   } catch (error) {
     res.status(500).send({ error: "An error occurred" });
   }

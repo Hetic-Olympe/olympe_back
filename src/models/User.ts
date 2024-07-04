@@ -42,6 +42,9 @@ export class User {
   @Column({ default: false })
   isConnected: boolean;
 
+  @Column({ default: false })
+  isArchived: boolean;
+
   @ManyToOne(() => Role, (role) => role.users)
   role: Role;
 

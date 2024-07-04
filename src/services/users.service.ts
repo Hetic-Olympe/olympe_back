@@ -21,6 +21,7 @@ const FIELDS_TO_SELECT: (keyof User)[] = [
   "fullname",
   "phone",
   "isConnected",
+  "isArchived",
   "createdAt",
 ];
 
