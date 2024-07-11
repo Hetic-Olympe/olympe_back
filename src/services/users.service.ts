@@ -23,6 +23,7 @@ const FIELDS_TO_SELECT: (keyof User)[] = [
   "isConnected",
   "isArchived",
   "createdAt",
+  "profileUrl",
 ];
 
 const buildRelations = (isAdminRoute: boolean) => {

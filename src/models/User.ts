@@ -39,6 +39,9 @@ export class User {
   @Column({ type: "varchar", length: 30, nullable: true })
   phone: string;
 
+  @Column({ type: "varchar", nullable: true })
+  profileUrl: string;
+
   @Column({ default: false })
   isConnected: boolean;
 
@@ -55,10 +58,13 @@ export class User {
   interests: Interest[];
 
   // Virtual column
-
   @VirtualColumn({
     query: () =>
-      `SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM user`,
+      `SELECT CASE
+        WHEN firstname IS NULL OR lastname IS NULL THEN NULL
+        ELSE CONCAT(firstname, ' ', lastname)
+      END AS fullname
+      FROM user`,
   })
-  fullname: string;
+  fullname: string | null;
 }
