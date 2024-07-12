@@ -57,6 +57,7 @@ CREATE TABLE "public"."user" (
     "isConnected" bool NOT NULL DEFAULT false,
     "roleId" int4,
     "isArchived" bool NOT NULL DEFAULT false,
+    "profileUrl" varchar(500),
     CONSTRAINT "FK_c28e52f758e7bbc53828db92194" FOREIGN KEY ("roleId") REFERENCES "public"."role"("id"),
     PRIMARY KEY ("id")
 );
@@ -68,20 +69,19 @@ CREATE TABLE "public"."user" (
 CREATE UNIQUE INDEX "PK_cace4a159ff9f2512dd42373760" ON public."user" USING btree (id);
 CREATE UNIQUE INDEX "UQ_e12875dfb3b1d92d7d7c5377e22" ON public."user" USING btree (email);
 
-INSERT INTO "public"."user" ("id", "createdAt", "updatedAt", "email", "password", "firstname", "lastname", "phone", "isConnected", "roleId", "isArchived") VALUES
-('341aac51-55d9-48ef-9a1b-0634b3ac2633', '2024-05-19 22:04:00', '2024-07-02 09:16:23.566688', 'william.jones@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'William', 'Jones', '654789123', 'f', 2, 'f'),
-('41fb99b2-96fb-4c91-bba5-5b9d6482dc40', '2024-05-24 22:09:00', '2024-07-02 09:16:23.592049', 'ava.wilson@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Ava', 'Wilson', '789123456', 'f', 2, 'f'),
-('4492db17-870e-4c34-8932-14162be04509', '2024-05-21 22:06:00', '2024-05-21 22:06:00', 'james.taylor@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'James', 'Taylor', '321987654', 'f', 2, 'f'),
-('5a52debd-d659-4ffa-a189-534f0a22474e', '2024-06-28 08:47:31.511241', '2024-06-28 08:47:31.511241', 'james-burn@gmail.com', '$2a$10$IG.CBEAeyr7zLNZwbFUZqePQmHfNmi.SDMCWa08caTpdqMXYZ6c4e', NULL, NULL, NULL, 'f', 2, 'f'),
-('79c2c2c1-e213-43b8-b1c3-8b71c6c9ba24', '2024-06-28 08:46:59.217286', '2024-06-28 08:46:59.217286', 'james-aron@gmail.com', '$2a$10$9cOZk.sRO33/QqT7AR64rOpYeQCobiP5lq98DQA/ThU1WO23Zf6Vy', NULL, NULL, NULL, 'f', 2, 'f'),
-('9263d4bf-f82d-4610-85bc-6f14b0ea6d0b', '2024-05-17 22:02:00', '2024-05-17 22:02:00', 'michael.brown@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Michael', 'Brown', '456123789', 'f', 2, 'f'),
-('9800ebcd-e43e-4ab5-a584-0f578a5a9676', '2024-05-18 22:03:00', '2024-05-18 22:03:00', 'emily.wilson@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Emily', 'Wilson', '987123456', 'f', 2, 'f'),
-('b80a8b07-0b82-4364-beb4-ebd68980fcf4', '2024-05-16 22:01:00', '2024-05-16 22:01:00', 'jane.smith@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Jane', 'Smith', '987654321', 'f', 2, 'f'),
-('be9fb551-0311-4c64-9b03-cf5699d0b1fa', '2024-05-23 22:08:00', '2024-05-23 22:08:00', 'liam.miller@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Liam', 'Miller', '456789123', 'f', 2, 'f'),
-('d6dfa6e6-33f8-4de7-9a5d-7b8635cf88d9', '2024-05-22 22:07:00', '2024-05-22 22:07:00', 'emma.anderson@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Emma', 'Anderson', '123789456', 'f', 2, 'f'),
-('f1c3460c-8d2c-4f93-987a-11ac4f4c11c5', '2024-05-15 22:00:00', '2024-05-15 22:00:00', 'john.doe@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'John', 'Doe', '123456789', 'f', 1, 'f'),
-('fefe9421-aa5f-4cd9-9efc-7164376fa66f', '2024-05-20 22:05:00', '2024-05-20 22:05:00', 'olivia.davis@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Olivia', 'Davis', '789456123', 'f', 2, 'f');
-
+INSERT INTO "public"."user" ("id", "createdAt", "updatedAt", "email", "password", "firstname", "lastname", "phone", "isConnected", "roleId", "isArchived", "profileUrl") VALUES
+('341aac51-55d9-48ef-9a1b-0634b3ac2633', '2024-05-19 22:04:00', '2024-07-11 09:43:04.692076', 'william.jones@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'William', 'Jones', '654789123', 'f', 2, 'f', NULL),
+('41fb99b2-96fb-4c91-bba5-5b9d6482dc40', '2024-05-24 22:09:00', '2024-07-11 09:46:57.163381', 'ava.wilson@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Ava', 'Wilson', '789123456', 'f', 1, 'f', NULL),
+('4492db17-870e-4c34-8932-14162be04509', '2024-05-21 22:06:00', '2024-07-11 06:59:01.111431', 'james.taylor@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'James', 'Taylor', '321987654', 'f', 1, 'f', NULL),
+('5a52debd-d659-4ffa-a189-534f0a22474e', '2024-06-28 08:47:31.511241', '2024-07-09 17:03:08.294533', 'james-burn@gmail.com', '$2a$10$IG.CBEAeyr7zLNZwbFUZqePQmHfNmi.SDMCWa08caTpdqMXYZ6c4e', 'Ben', 'Never', '0780489839', 'f', 2, 'f', NULL),
+('79c2c2c1-e213-43b8-b1c3-8b71c6c9ba24', '2024-06-28 08:46:59.217286', '2024-06-28 08:46:59.217286', 'james-aron@gmail.com', '$2a$10$9cOZk.sRO33/QqT7AR64rOpYeQCobiP5lq98DQA/ThU1WO23Zf6Vy', NULL, NULL, NULL, 'f', 2, 'f', NULL),
+('9263d4bf-f82d-4610-85bc-6f14b0ea6d0b', '2024-05-17 22:02:00', '2024-05-17 22:02:00', 'michael.brown@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Michael', 'Brown', '456123789', 'f', 2, 'f', NULL),
+('9800ebcd-e43e-4ab5-a584-0f578a5a9676', '2024-05-18 22:03:00', '2024-05-18 22:03:00', 'emily.wilson@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Emily', 'Wilson', '987123456', 'f', 2, 'f', NULL),
+('b80a8b07-0b82-4364-beb4-ebd68980fcf4', '2024-05-16 22:01:00', '2024-07-08 05:04:05.357476', 'jane.smith@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Jane', 'Smith', '987654321', 'f', 2, 'f', NULL),
+('be9fb551-0311-4c64-9b03-cf5699d0b1fa', '2024-05-23 22:08:00', '2024-05-23 22:08:00', 'liam.miller@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Liam', 'Miller', '456789123', 'f', 2, 'f', NULL),
+('d6dfa6e6-33f8-4de7-9a5d-7b8635cf88d9', '2024-05-22 22:07:00', '2024-05-22 22:07:00', 'emma.anderson@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Emma', 'Anderson', '123789456', 'f', 2, 'f', NULL),
+('f1c3460c-8d2c-4f93-987a-11ac4f4c11c5', '2024-05-15 22:00:00', '2024-05-15 22:00:00', 'john.doe@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'John', 'Doe', '123456789', 'f', 1, 'f', NULL),
+('fefe9421-aa5f-4cd9-9efc-7164376fa66f', '2024-05-20 22:05:00', '2024-05-20 22:05:00', 'olivia.davis@gmail.com', '$2a$10$HOJ9KXSD6tcYUWmnucyv2OYj6CaeJmjZTZuKIz.pjLu/n1znlnU3W', 'Olivia', 'Davis', '789456123', 'f', 2, 'f', NULL);
 
 
 -- -------------------------------------------------------------
